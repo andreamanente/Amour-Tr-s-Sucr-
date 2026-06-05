@@ -190,6 +190,29 @@ html, body {
 }
 #restart-btn:hover { transform:scale(1.05); }
 
+/* On rend le jeu "scrollable" */
+@media (max-width: 768px) {
+  html, body {
+    height: auto;
+    min-height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+
+  #game {
+    height: auto;
+    min-height: 100vh;
+    overflow: visible;
+    padding-bottom: 220px;
+  }
+
+  #dialog-box {
+    position: relative;
+    bottom: auto;
+    margin-top: 60vh;
+  }
+}
+
 /* ── ANIM TEXTE ── */
 @keyframes fadeIn { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:translateY(0)} }
 .fade-in { animation:fadeIn .4s ease forwards; }
