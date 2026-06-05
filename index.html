@@ -201,7 +201,7 @@ html, body {
 }
 @keyframes heartFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.5)} }
 
-/* ── ADAPTATION MOBILE : PAGE SCROLLABLE ── */
+/* ── ADAPTATION MOBILE : PAGE SCROLLABLE SANS SUPERPOSITION ── */
 @media (max-width: 768px) {
   html, body {
     height: auto;
@@ -217,16 +217,16 @@ html, body {
     padding-bottom: 30px;
   }
 
-  #scene-bg {
+  #scene-bg,
+  #scene-overlay {
     position: fixed;
+  }
+
+  #scene-bg {
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center top;
     background-color: #000;
-  }
-
-  #scene-overlay {
-    position: fixed;
   }
 
   #character-display {
@@ -234,9 +234,15 @@ html, body {
     bottom: auto;
     left: auto;
     transform: none;
-    margin: 25vh auto 20px;
-    max-width: 80vw;
-    max-height: 42vh;
+
+    display: block;
+    margin: 22vh auto 24px;
+
+    max-width: 72vw;
+    max-height: 36vh;
+    height: auto;
+
+    z-index: 2;
   }
 
   #dialog-box {
@@ -244,10 +250,14 @@ html, body {
     bottom: auto;
     left: auto;
     right: auto;
-    width: 100%;
+
+    width: calc(100% - 20px);
+    margin: 0 auto 20px;
+
     max-height: none;
     min-height: auto;
-    margin-top: auto;
+
+    z-index: 3;
   }
 
   #dialog-text {
@@ -256,8 +266,12 @@ html, body {
     line-height: 1.5;
   }
 
+  #choices {
+    max-height: none;
+  }
+
   #next-btn {
-    margin-top: 10px;
+    margin-top: 12px;
     padding: 10px 24px;
   }
 }
