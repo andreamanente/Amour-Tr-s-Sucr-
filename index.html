@@ -202,76 +202,79 @@ html, body {
 @keyframes heartFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.5)} }
 
 /* ── ADAPTATION MOBILE : PAGE SCROLLABLE SANS SUPERPOSITION ── */
+/* ── MOBILE : personnage au-dessus, dialogue en dessous ── */
 @media (max-width: 768px) {
   html, body {
-    height: auto;
+    width: 100%;
     min-height: 100%;
+    height: auto;
     overflow-y: auto;
     overflow-x: hidden;
   }
 
   #game {
-    height: auto;
+    width: 100vw;
     min-height: 100dvh;
+    height: auto;
     overflow: visible;
-    padding-bottom: 30px;
+    display: flex;
+    flex-direction: column;
   }
 
   #scene-bg,
   #scene-overlay {
     position: fixed;
+    inset: 0;
   }
 
   #scene-bg {
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center top;
-    background-color: #000;
+    background-size: cover;
+    background-position: center;
+  }
+
+  #title-bar,
+  #stats-bar {
+    flex-shrink: 0;
   }
 
   #character-display {
-    position: relative;
-    bottom: auto;
-    left: auto;
+    position: static;
     transform: none;
-
     display: block;
-    margin: 22vh auto 24px;
-
-    max-width: 72vw;
-    max-height: 36vh;
+    margin: 20px auto 10px;
+    max-width: 75vw;
+    max-height: 38vh;
+    width: auto;
     height: auto;
-
     z-index: 2;
+    animation: none;
   }
 
   #dialog-box {
-    position: relative;
-    bottom: auto;
-    left: auto;
-    right: auto;
-
-    width: calc(100% - 20px);
-    margin: 0 auto 20px;
-
-    max-height: none;
+    position: static;
+    width: 100%;
     min-height: auto;
-
-    z-index: 3;
+    max-height: none;
+    margin-top: auto;
+    padding: 14px 18px 18px;
+    z-index: 10;
   }
 
   #dialog-text {
     max-height: none;
+    overflow: visible;
     font-size: 0.95rem;
-    line-height: 1.5;
+    line-height: 1.45;
   }
 
   #choices {
     max-height: none;
+    overflow: visible;
   }
 
   #next-btn {
-    margin-top: 12px;
+    align-self: flex-end;
+    margin-top: 10px;
     padding: 10px 24px;
   }
 }
