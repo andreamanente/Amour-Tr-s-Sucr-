@@ -170,7 +170,12 @@ html, body {
   position:fixed; inset:0; z-index:100;
   background:linear-gradient(135deg,#1a0a2e,#2d0a3e);
   display:none; flex-direction:column;
-  align-items:center; justify-content:center; gap:20px; padding:32px; text-align:center;
+  align-items:center; justify-content:flex-start; gap:20px;
+  padding:32px; text-align:center;
+  overflow-y:auto;
+}
+#end-screen::after {
+  content:''; display:block; min-height:20px;
 }
 #end-screen.visible { display:flex; }
 #end-emoji { font-size:5rem; animation:float2 3s ease-in-out infinite; }
@@ -201,84 +206,66 @@ html, body {
 }
 @keyframes heartFly { 0%{opacity:1;transform:translateY(0) scale(1)} 100%{opacity:0;transform:translateY(-80px) scale(1.5)} }
 
-/* ── ADAPTATION MOBILE : PAGE SCROLLABLE SANS SUPERPOSITION ── */
-/* ── MOBILE : personnage au-dessus, dialogue en dessous ── */
-@media (max-width: 768px) {
-  html, body {
-    width: 100%;
-    min-height: 100%;
-    height: auto;
-    overflow-y: auto;
-    overflow-x: hidden;
-  }
+/* ── RESPONSIVE MOBILE ── */
+@media (max-width: 600px) {
 
-  #game {
-    width: 100vw;
-    min-height: 100dvh;
-    height: auto;
-    overflow: visible;
-    display: flex;
-    flex-direction: column;
-  }
+  /* Titre compact */
+  #title-bar { padding:5px 8px; }
+  #title-bar span { font-size:.68rem; letter-spacing:0; }
 
-  #scene-bg,
-  #scene-overlay {
-    position: fixed;
-    inset: 0;
-  }
+  /* Stats sur une ligne, plus petites */
+  #stats-bar { gap:6px; padding:3px 8px; }
+  .stat-item { font-size:.65rem; }
 
-  #scene-bg {
-    background-size: cover;
-    background-position: center;
-  }
-
-  #title-bar,
-  #stats-bar {
-    flex-shrink: 0;
-  }
-
+  /* Personnage plus petit, remonté juste au-dessus de la boîte */
   #character-display {
-    position: static;
-    transform: none;
-    display: block;
-    margin: 20px auto 10px;
-    max-width: 75vw;
-    max-height: 38vh;
-    width: auto;
-    height: auto;
-    z-index: 2;
-    animation: none;
+    max-height:40vh;
+    max-width:72vw;
+    bottom:215px;
   }
 
+  /* Boîte dialogue : plus de place pour les choix */
   #dialog-box {
-    position: static;
-    width: 100%;
-    min-height: auto;
-    max-height: none;
-    margin-top: auto;
-    padding: 14px 18px 18px;
-    z-index: 10;
+    padding:10px 12px 12px;
+    min-height:215px;
+    max-height:55vh;
+    gap:6px;
   }
 
+  /* Nom du speaker */
+  #speaker-name { font-size:.82rem; padding:2px 10px; }
+
+  /* Texte : taille réduite, scrollable */
   #dialog-text {
-    max-height: none;
-    overflow: visible;
-    font-size: 0.95rem;
-    line-height: 1.45;
+    font-size:.85rem;
+    line-height:1.5;
+    max-height:75px;
   }
 
-  #choices {
-    max-height: none;
-    overflow: visible;
+  /* Boutons de choix : grands pour les doigts */
+  .choice-btn {
+    font-size:.8rem;
+    padding:10px 12px;
+    border-radius:8px;
   }
 
-  #next-btn {
-    align-self: flex-end;
-    margin-top: 10px;
-    padding: 10px 24px;
-  }
+  /* Bouton suivant */
+  #next-btn { font-size:.8rem; padding:7px 16px; }
+
+  /* Écran démarrage */
+  #start-screen { gap:14px; padding:18px 14px; justify-content:center; }
+  .title-sparkle { font-size:clamp(1.3rem,7vw,1.9rem); }
+  #start-btn { padding:11px 26px; font-size:.95rem; }
+  .birthday-tag { font-size:.72rem; }
+
+  /* Écran de fin */
+  #end-screen { padding:18px 14px; gap:12px; }
+  #end-emoji { font-size:3rem; }
+  #end-title { font-size:clamp(1rem,5vw,1.5rem); }
+  #end-char { max-height:22vh; }
+  #end-text { font-size:.82rem; line-height:1.6; }
+  #restart-btn { padding:9px 22px; font-size:.9rem; }
 }
-  
 </style>
 </head>
 <body>
@@ -307,7 +294,7 @@ html, body {
     <div class="stat-item"><span class="stat-heart">❤️</span> Léon : <span id="stat-leon">0</span></div>
     <div class="stat-item"><span class="stat-heart">💜</span> Rhea : <span id="stat-rhea">0</span></div>
     <div class="stat-item"><span class="stat-heart">💙</span> Rafayel : <span id="stat-rafayel">0</span></div>
-    <div class="stat-item" id="stat-silus-wrap" style="display:none"><span class="stat-heart">🩵</span> ??? : <span id="stat-silus">0</span></div>
+    <div class="stat-item" id="stat-sylus-wrap" style="display:none"><span class="stat-heart">🩵</span> ??? : <span id="stat-sylus">0</span></div>
   </div>
   <img id="character-display" src="" alt="" style="opacity:0">
   <div id="dialog-box">
@@ -333,18 +320,30 @@ const IMGS = {
   portail: "img/decors/portail.webp",
   hall:    "img/decors/hall.webp",
   salle_de_classe:   "img/decors/salle_de_classe.png",
+  gymnase: "img/decors/gymnase.webp",
+  cour:    "img/decors/cour.webp",
+  cantine: "img/decors/cantine.webp",
   lettre:  "img/objets/lettre.png",
+  puff:    "img/objets/puff.png",
+  cappuccino: "img/objets/cappuccino.png",
+  caca:  "img/objets/caca.png",
   leon:    "img/personnages/Leon.png",
+  leon_blush: "img/personnages/Leon_blush.png",
   rafayel: "img/personnages/Rafayel.png",
   rhea:    "img/personnages/Rhea.png",
+  rhea_cheffe: "img/personnages/Rhea_cheffe.png",
+  rhea_blush: "img/personnages/Rhea_cheffe_blush.png",
   sylus:   "img/personnages/Sylus.png",
   hakim:   "img/personnages/Hakim.png",
+  fresh:   "img/personnages/Fresh_Pouet.png",
+  julien:  "img/personnages/Julien.png",
+  julien_pleure: "img/personnages/Julien_pleure.png",
   none:    ""
 };
 
 // ── ÉTAT ──
 let playerName = "Margotte";
-let hearts = { leon:0, rhea:0, rafayel:0, silus:0 };
+let hearts = { leon:0, rhea:0, rafayel:0, sylus:0 };
 let currentScene = 0;
 let secretFound = false;
 
@@ -365,7 +364,7 @@ const scenes = [
   { bg:'portail', char:'none', speaker:"Narratrice",
     text:()=>`C'est un matin ordinaire à l'Académie du Destin Romantique™. ${playerName} franchit les portes dorées de l'établissement, sa chevelure volant gracieusement face à la douce brise d'été du mois de juin.`, next:true },
   { bg:'hall', char:'none', speaker:"Narratrice",
-    text:()=>`La nouvelle élève s'avançait discrètement dans le hall du lycée, lorsque toudincou trois silhouettes mystérieuses se dressent devant elle. L'ambiance est dramatique. Une musique de piano dramatique envahit l'air. Personne ne sait d'où elle vient, te pose pas de questions c le scénario qui est comme ça en fait.`, next:true },
+    text:()=>`La nouvelle élève s'avançait discrètement dans le hall du lycée, lorsque toudincou trois silhouettes mystérieuses se dressent devant elle. L'ambiance est dramatique. Une musique de piano envahit l'air. Personne ne sait d'où elle vient, te pose pas de questions c le scénario qui est comme ça en fait.`, next:true },
   { bg:'hall', char:'leon', speaker:"Narratrice",
     text:()=>`Le premier inconnu s'avance. Il porte un T-shirt bien moulant qui laisse apparaîte ses abdos SAILLANTS, et une expression qui dit clairement "j'ai survécu à Raccoon City mais ce lycée me terrifie quand même." Tout chez lui donne envie à ${playerName} de l'appeler daddy...`, next:true },
   { bg:'hall', char:'leon', speaker:"Léon S. Kennedy",
@@ -396,7 +395,7 @@ const scenes = [
     text:()=>`...Tu viens de sauver ma vie pour la deuxième fois aujourd'hui. La première fois c'était face à un zombie dans les toilettes du premier étage. Ne va pas aux toilettes du premier étage.`, next:true },
   { bg:'hall', char:'leon', speaker:"Narratrice",
     text:()=>`Léon prend le gel avec une main tremblante et vous regarde comme si vous étiez la promesse d'un monde sans biohazard. Un zombie passe en arrière-plan. Personne ne le remarque. C'est la routine.`,
-    choices:[{ text:"Continuer ▶", action:()=>addHeart('leon',3), next:18 }] },
+    choices:[{ text:"Continuer ▶", next:18 }] },
 
   // ROUTE RHEA — indices 12, 13, 14
   { bg:'hall', char:'rhea', speaker:()=>playerName,
@@ -405,7 +404,7 @@ const scenes = [
     text:()=>`250 grammes. Et tu les écrases à la main. Pas avec un fouet. À la main. C'est plus expressif, chérie.`, next:true },
   { bg:'hall', char:'rhea', speaker:"Narratrice",
     text:()=>`Rhea vous regarde avec un respect nouveau. Quelqu'un qui s'intéresse à ses cookies ET à son sport de combat. Elle sort un carnet rose plein de recettes et de prises de catch annotées côte à côte.`,
-    choices:[{ text:"Continuer ▶", action:()=>addHeart('rhea',3), next:18 }] },
+    choices:[{ text:"Continuer ▶", next:18 }] },
 
   // ROUTE RAFAYEL — indices 15, 16, 17
   { bg:'hall', char:'rafayel', speaker:()=>playerName,
@@ -414,49 +413,299 @@ const scenes = [
     text:()=>`J'ai mis 3 000 ans à perfectionner cette recette. Les pouvoirs divins ne font pas tout. Il faut aussi une bonne sauce soja.`, next:true },
   { bg:'hall', char:'rafayel', speaker:"Narratrice",
     text:()=>`Rafayel sourit d'un sourire qui a probablement fait craquer des reines et des divinités marines. Vous vous demandez si l'assurance maladie couvre les dommages liés aux dieux de l'océan. Vous décidez de ne pas y penser.`,
-    choices:[{ text:"Continuer ▶", action:()=>addHeart('rafayel',3), next:18 }] },
+    choices:[{ text:"Continuer ▶", next:18 }] },
 
-  // SCÈNE COMMUNE — index 18
+  // SCÈNE COMMUNE - Cours et Apparition de Fresh et Pouet — index 18
   { bg:'salle_de_classe', char:'none', speaker:"Narratrice",
     text:()=>`La journée de cours commence. ${playerName} s'assoit en cours de "Stratégie Romantique Avancée", une matière obligatoire dans cette école très normale. Le professeur arrive, personne ne pose de questions.`, next:true },
   // index 19
   { bg:'salle_de_classe', char:'hakim', speaker:"Prof. DR Hakim",
     text:()=>`Bonjour. Aujourd'hui nous aborderons la 1ère leçon du chapitre 4 intitulé "Comment être une tana". Vous allez travailler sur l'étude de cas suivante : gérer TROIS prétendants simultanément sans se faire cramer. Note : l'incident de l'an dernier avec le dieu de la mer et l'agent du gouvernement ne se reproduira PAS.`, next:true },
   // index 20
-  { bg:'hall', char:'lettre', speaker:"Narratrice",
-    text:()=>`À la pause déjeuner, quelque chose d'étrange se produit. Un papillon bleu électrique se pose sur l'épaule de ${playerName}. Il porte une enveloppe cachetée.`, next:true },
+  { bg:'cour', char:'none', speaker:"Narratrice",
+    text:()=>`Pendant la récréation du matin, ${playerName} décide de prendre l'air en se promenant dans la cour de l'école. Des bruits démoniaques émanent des buissons.`, next:true },
   // index 21
-  { bg:'hall', char:'lettre', speaker:"Papillon Mystérieux",
-    text:()=>`*ne parle pas, c'est un papillon*   …   *mais il a clairement un air entendu*`,
+  { bg:'cour', char:'fresh', speaker:"Narratrice",
+    text:()=>`Soudainement, une petite silouhette diforme apparaît.`, next:true },
+  // index 22
+  { bg:'cour', char:'fresh', speaker:"Fresh et Pouet",
+    text:()=>`Humain, nous sommes les rois démons Fresh et Pouet. Nous te léguons notre pouvoir démoniaque !`, next:true },
+  // index 23
+  { bg:'cour', char:'puff', speaker:"Narratrice",
+    text:()=>`Ils t'ont donné... une puff goût paff ??? C'est ça la source de leur pouvoir !? Mais ça n'a aucun sens...`, next:true },
+
+  // SCÈNE COMMUNE - Apparition de Julien — index 24
+  { bg:'cantine', char:'none', speaker:"Narratrice",
+    text:()=>`Sur le temps du midi, ${playerName} est seule. Elle n'ose pas aller voir ses camarades pour manger avec eux.`, next:true },
+  // index 25
+  { bg:'cantine', char:'none', speaker:"Narratrice",
+    text:()=>`Quelqu'un s'approche de ${playerName}. On lui tape sur l'épaule.`, next:true },
+  // index 26
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`*Avec un cheveux sur la langue* Fallut, moi f'es Vulien. Effe que tu veux êcre mon amille ?`, next:true },
+  // 1er CHOIX JULIEN — index 27
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`${playerName} l'observe intensément. Que doit-elle faire ?`,
     choices:[
-      { text:"📩 Ouvrir l'enveloppe mystérieuse", action:()=>{}, next:22 },
-      { text:"🤷 Ignorer le papillon (c'est peut-être juste un papillon)", action:()=>{}, next:25 },
+      { text:"🤣 PTDR T KI", next:28 },
+      { text:"❓ Si tu veux...?", next:32 },
+      { text:"💦 Lui péter du sperme dessus", next:49 },
     ]
   },
 
-  // FIN SECRÈTE SILUS — indices 22, 23, 24
+  // ROUTE "PTDR T KI" - indices 28
+  { bg:'cantine', char:'julien', speaker:()=>playerName,
+    text:()=>`Mais PTDR T KI toi déjà ? Vas-y jte connais pas jveux pas être ton amie.`, next:true },
+  // index 29
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Aïe, coup dur pour Julien.`, next:true },
+  // index 30
+  { bg:'cantine', char:'julien_pleure', speaker:"Julien chauve",
+    text:()=>`*Toujours avec un cheveux sur la langue* Ouinnnnn mais t'es trop méfante en fait !!`, next:true },
+  // index 31
+  { bg:'cantine', char:'none', speaker:"Narratrice",
+    text:()=>`Ah... Julien semble un peu blessé par ton refus. Il se retourne et s'en va, les épaules baissées. Tu ne le reverras plus jamais.`, 
+  choices:[{ text:"Continuer ▶", next:53 }] },
+
+  // ROUTE "SI TU VEUX...?" - indices 32
+  { bg:'cantine', char:'julien', speaker:()=>playerName,
+    text:()=>`Oui, si tu veux...? C'est mon 1er jour ici, j'ai pas encore de copains, UwU`, next:true },
+  // index 33
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Julien semble surpris mais content de ta réponse. Il te sourit timidement, un sourire qui révèle une dentition impeccable.`, next:true },
+  // index 34
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`*Toujours avec un cheveux sur la langue* Ah fuper alors ! On peut êcre amilles !!`, next:true },
+  // index 35
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Vous décidez de devenir amis, et de manger ensemble ce midi. Julien vous raconte ses aventures dans l'Académie du Destin Romantique™, et vous vous promettez de passer plus de temps ensemble.`, next:true },
+  // index 36
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Sans trop savoir pourquoi ni comment, la discussion s'oriente vers la vie romantique de Julien. Le jeune homme, meilleur ami de Rafayel depuis maintenant 10 ans, vous raconte qu'il est fou amoureux de lui et qu'il ne sait pas comment le lui dire.`, next:true },
+  // 2eme CHOIX JULIEN — index 37
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`${playerName} l'observe intensément. Que doit-elle faire ?`,
+    choices:[
+      { text:"👼 Tu devrais sans doute lui dire", next:38 },
+      { text:"💦 Lui péter du sperme dessus", next:49 },
+    ]
+  },
+
+  // ROUTE "TU DEVRAIS SANS DOUTE LUI DIRE" - indices 38
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`*Encore en zozotant* Ah ouais tu crois ? Fe fuis crop timide pour fa, f'ai peur de le perdre comme amille...`, next:true },
+  // index 39
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Tu le rassures du mieux que tu peux, lui expliquant que les sentiments amoureux sont naturels et que Rafayel est quelqu'un de formidable qui mérite d'être aimé. Julien semble un peu plus confiant après votre discussion.`, next:true },
+  // index 40
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`*Encore en zozotant* Tu as raison, je devrais lui dire. Merfi ${playerName}.`, next:true },
+  // index 41
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Vous et Julien décidez de chercher Rafayel pour que Julien puisse lui dire ses sentiments.`, next:true },
+  // index 42
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`Rafayel, f'ai quelque fose à te dire... Voilà, fe t'aime, vraiment beaucoup.`, next:true },
+  // index 43
+  { bg:'cantine', char:'rafayel', speaker:"Rafayel",
+    text:()=>`Désolé, Julien. Je ne pensais pas que tu me considérerais comme ça.`, next:true },
+  // index 44
+  { bg:'cantine', char:'julien_pleure', speaker:"Julien chauve",
+    text:()=>`Salut mon pote`, next:true },
+  // index 45
+  { bg:'cantine', char:'rafayel', speaker:"Narratrice",
+    text:()=>`Julien disparait. Bizarrement, tu n'as aucun remords, le beau Rafayel est maintenant rien qu'à toi *clin d'oeil*`, next:true },
+  // 3eme CHOIX JULIEN — index 46
+  { bg:'cantine', char:'rafayel', speaker:"Narratrice",
+    text:()=>`${playerName} Que choisis-tu ?`,
+    choices:[
+      { text:"❤️‍🔥 Proposer un date à Rafayel", action:()=>addHeart('rafayel',4), next:47 },
+      { text:"🍃 Ne rien faire", next:53 },
+    ]
+  },
+
+  // ROUTE "PROPOSER UN DATE À RAFA" - indiex 47
+  { bg:'cantine', char:'rafayel', speaker:"Rafayel",
+    text:()=>`*Avec un sourire mystérieux* J'aimerais beaucoup ça.`, next:true },
+  // index 48
+  { bg:'cantine', char:'rafayel', speaker:"Narratrice",
+    text:()=>`Rafayel accepte avec enthousiasme ta proposition de date. Vous décidez de vous retrouver le soir même pour une promenade romantique au bord de la mer, suivie d'un dîner aux chandelles dans un restaurant chic de la ville.`, 
+  choices:[{ text:"Continuer ▶", next:53 }] },
+
+  // ROUTE "PETER DU SPERME SUR JULIEN" - index 49
+  { bg:'cantine', char:'julien', speaker:"Narratrice",
+    text:()=>`Dans un élan de rage et de frustration, tu décides de lui péter du sperme dessus. Julien est sous le choc, il ne comprend pas ce qui vient de se passer.`, next:true },
+  // index 50
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`*Toujours avec un cheveux sur la langue* Hein ? Qu'est-ce que tu viens de faire ?`, next:true },
+  // index 51
+  { bg:'cantine', char:'julien_pleure', speaker:"Julien chauve",
+    text:()=>`*Toujours avec un cheveux sur la langue* Ouinnnnn mais t'es trop méfante en fait !!`, next:true },
+  // index 52
+  { bg:'cantine', char:'none', speaker:"Narratrice",
+    text:()=>`Ah... Julien semble un peu blessé par ton geste. Il se retourne et s'en va, les épaules baissées. Tu ne le reverras plus jamais.`,
+    choices:[{ text:"Continuer ▶", next:53 }] },
+
+  // SCENE COMMUNE - LEON, "CAPPUCCINO ASSASSINO" — index 53
+  { bg:'salle_de_classe', char:'leon', speaker:"Narratrice",
+    text:()=>`Après la pause déjeuner, en permanence, Léon révise ses fiches de "Neutralisation de Cibles Mouvantes". ${playerName} s'assoit en face de lui. Sur son cahier, elle dessine sans réfléchir.`, next:true },
+  // index 54
+  { bg:'salle_de_classe', char:'leon', speaker:"Léon S. Kennedy",
+    text:()=>`*regarde le dessin* … C'est quoi ça ?`, next:true },
+  // index 55
+  { bg:'salle_de_classe', char:'leon', speaker:()=>playerName,
+    text:()=>`Un café ninja qui tue des gens.`, next:true },
+  // index 56
+  { bg:'salle_de_classe', char:'cappuccino', speaker:"Léon S. Kennedy",
+    text:()=>`...`, next:true },
+  // index 57
+  { bg:'salle_de_classe', char:'leon', speaker:"Léon S. Kennedy",
+    text:()=>`... Pourquoi.`, next:true },
+  // index 58
+  { bg:'salle_de_classe', char:'leon', speaker:()=>playerName,
+    text:()=>`CAPPUCCINO ASSASSINO`, next:true },
+  // index 59
+  { bg:'salle_de_classe', char:'leon', speaker:"Léon S. Kennedy",
+    text:()=>`*Long silence* ... Tung Tung Tung Sahur était plus logique.`, next:true },
+  // CHOIX TUNG TUNG — index 60
+  { bg:'salle_de_classe', char:'leon', speaker:"Narratrice",
+    text:()=>`${playerName} Que choisis-tu ?`,
+    choices:[
+      { text:"🎵 TU CONNAIS TUNG TUNG ?!", action:()=>addHeart('leon',3), next:61 },
+      { text:"🤝 Lui tendre le cahier pour qu'il dessine aussi.", action:()=>addHeart('leon',2), next:62 },
+      { text:"😐 C'est quoi Tung Tung Tung Sahur ?", action:()=>addHeart('leon',-3), next:66 },
+    ]
+  },
+
+  // ROUTE TUNG TUNG - index 61
+  { bg:'salle_de_classe', char:'leon_blush', speaker:"Narratrice",
+    text:()=>`Léon te regarde, l'air amusé. Il sourit légèrement. C'est sa première vraie connexion humaine depuis 2004.`, 
+  choices:[{ text:"Continuer ▶", next:67 }] },
+  
+  // ROUTE TENDRE CAHIER — index 62
+  { bg:'salle_de_classe', char:'leon', speaker:"Léon S. Kennedy",
+    text:()=>`*prend le cahier* Oh, tu veux que je dessine aussi ? Euh… D'accord.`, next:true },
+  // index 63
+  { bg:'salle_de_classe', char:'leon', speaker:"Narratrice",
+    text:()=>`Léon prend le cahier et commence à dessiner. Après quelques minutes, il te tend le cahier. Sur la page, Bombardiro Coccodrillo, avec une précision militaire troublante.`, next:true },
+  // index 64
+  { bg:'salle_de_classe', char:'leon', speaker:"Léon S. Kennedy",
+    text:()=>`Voilà, j'ai ajouté un dessin.`, next:true },
+  // index 65
+  { bg:'salle_de_classe', char:'leon', speaker:"Narratrice",
+    text:()=>`Tu observes le dessin de Léon. C'est… étonnamment bon. Léon te regarde avec un petit sourire en coin.`, 
+    choices:[{ text:"Continuer ▶", next:67 }] },
+  
+  // ROUTE EXPLIQUER TUNG TUNG — index 66
+  { bg:'salle_de_classe', char:'leon', speaker:"Narratrice",
+    text:()=>`Léon se lève et part. La conversation est terminée.`,
+    choices:[{ text:"Continuer ▶", next:67 }] },
+
+  // SCÈNE COMMUNE - RHEA, "COOKIE CHEFFE" — index 67
+  { bg:'salle_de_classe', char:'none', speaker:"Narratrice",
+    text:()=>`Deuxième cours de l'après-midi : cuisine créative. Au tableau, la recette du jour : Gâteau au cacao bio, façon terroir. Enfin… c'est ce que Margotte a cru lire. En s'approchant, elle réalise que le "cacao" est orthographié différemment...`, next:true },
+  // index 68
+  { bg:'salle_de_classe', char:'caca', speaker:"Narratrice",
+    text:()=>`Les ingrédients sont livrés dans des sacs étiquetés "Karfourre — Caca Bio Premium ✓ Agriculture Raisonnée"...`, next:true },
+  // index 69
+  { bg:'salle_de_classe', char:'none', speaker:"Prof de cuisine créative",
+    text:()=>`Les équipes sont aléatoires. Recours interdits. Le résultat sera noté sur la texture, l'odeur, et la présentation. Bonne chance.`, next:true },
+  // index 70
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`Par pur hasard cosmique — ou par intervention d'une puissance supérieure douteuse — Margotte se retrouve en binôme avec Rhea Ripley.`, next:true },
+  // index 71
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`*renifle le sac* … C'est bio au moins. *retrousse ses manches* Bon. Moi je pétris, toi tu doses. On va faire une équipe de ouf, ma belle.`, next:true },
+  // index 72
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Narratrice",
+    text:()=>`Rhea malaxe la préparation avec la même intensité qu'un entraînement de catch. Le gâteau prend forme. Il est techniquement parfait. Personne n'ose imaginer le goût. Rhea se tourne vers Margotte, les mains encore plongées dans la pâte.`, next:true },
+  // index 73
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`Hé. T'as une technique pour la déco ou tu fais juste… *geste vague* …ça ?`, next:true },
+  // CHOIX TECHNIQUE DE DÉCO — index 74
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Narratrice",
+    text:()=>`Que réponds-tu ?`,
+    choices:[
+      { text:"🎨 J'ai une technique secrète de décoration : Je fais la tête de Bombardiro Coccodrillo en glaçage.", action:()=>addHeart('rhea',3), next:75 },
+      { text:"🤌 Je saupoudre, je tourne, je fais semblant de savoir ce que je fais.", action:()=>addHeart('rhea',2), next:76 },
+      { text:"😬 Je… je sais pas trop. Je cuisine pas beaucoup de base...", action:()=>addHeart('rhea',-1), next:77 },
+      { text:"🤢 Honnêtement je pense encore à ce qu'il y a dans le sac", action:()=>addHeart('rhea',-2), next:79 }
+    ]
+  },
+
+  // ROUTE RHEA - CHOIX TECHNIQUE DE DÉCO 1 — index 75
+  { bg:'salle_de_classe', char:'rhea_blush', speaker:"Narratrice",
+    text:()=>`Rhea lâche la pâte et te regarde. Quelque chose s'allume dans ses yeux. Serait-ce de l'admiration ? Elle est impressionnée par ta créativité et ton audace. C'est un moment de connexion intense entre vous deux.`, 
+  choices:[{ text:"Continuer ▶", next:81 }] },
+
+  // ROUTE RHEA - CHOIX TECHNIQUE DE DÉCO 2 — index 76
+  { bg:'salle_de_classe', char:'rhea_blush', speaker:"Rhea Ripley",
+    text:()=>`C'est exactement comme ça que je catch. J'aime bien.`,
+    choices:[{ text:"Continuer ▶", next:81 }] },
+
+  // ROUTE RHEA - CHOIX TECHNIQUE DE DÉCO 3 — index 77
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`Ah ouais… T'es pas très sûre de toi en fait. T'as jamais fait de gâteau avant ?`, next:true },
+  // index 78
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Narratrice",
+    text:()=>`Rhea te tend une spatule sans un mot.Elle semble un peu déçue par ta réponse, elle s'attendait à plus de confiance et d'assurance de la part de sa partenaire de cuisine.`, 
+    choices:[{ text:"Continuer ▶", next:82 }] },
+
+  // ROUTE RHEA - CHOIX TECHNIQUE DE DÉCO 4 — index 79
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`RESTE FOCUS. On pense pas à ça. On pense au résultat.`, next:true },
+  // index 80
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Narratrice",
+    text:()=>`Rhea semble un peu agacée par ta distraction. Elle s'attend à ce que tu sois plus concentrée sur la tâche à accomplir. C'est un moment de tension entre vous deux, mais aussi une opportunité de montrer que tu peux être sérieuse quand il le faut.`, 
+    choices:[{ text:"Continuer ▶", next:82 }] },
+
+  // ROUTE RHEA - FIN TECHNIQUE DE DÉCO 1 — index 81
+  { bg:'salle_de_classe', char:'rhea_blush', speaker:"Rhea Ripley",
+    text:()=>`*sort le gâteau du four, l'air satisfaite* Regarde-moi ça. On aurait pu faire pire. pause En fait non. On aurait pas pu faire pire. Mais on a fait de notre mieux et c'est ça qui compte. *te regarde* T'es une bonne équipière. Pour une civile.`,
+    choices:[{ text:"Continuer ▶", next:83 }] },
+
+  // ROUTE RHEA - FIN TECHNIQUE DE DÉCO 2 — index 82
+  { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
+    text:()=>`*sort le gâteau du four, l'air satisfaite* Regarde-moi ça. On aurait pu faire pire. pause En fait non. On aurait pas pu faire pire. *soupir* La prochaine fois concentre-toi. Dans le ring on pense pas. On agit.`,
+    choices:[{ text:"Continuer ▶", next:83 }] },
+
+  // PAPILLON MYSTÉRIEUX — index 83
+  { bg:'hall', char:'lettre', speaker:"Narratrice",
+    text:()=>`À la fin des cours, quelque chose d'étrange se produit. Un papillon bleu électrique se pose sur l'épaule de ${playerName}. Il porte une enveloppe cachetée.`, next:true },
+  // index 84
+  { bg:'hall', char:'lettre', speaker:"Papillon Mystérieux",
+    text:()=>`*ne parle pas, c'est un papillon*   …   *mais il a clairement un air entendu*`,
+    choices:[
+      { text:"📩 Ouvrir l'enveloppe mystérieuse", action:()=>{}, next:85 },
+      { text:"🤷 Ignorer le papillon (c'est peut-être juste un papillon)", action:()=>{}, next:88 },
+    ]
+  },
+
+  // FIN SECRÈTE SYLUS — indices 85, 86, 87
   { bg:'hall', char:'sylus', speaker:"Narratrice",
     text:()=>`${playerName} ouvre l'enveloppe. À l'intérieur : une seule phrase, écrite en encre argentée : "Je suis là depuis le début. Regarde bien." Et la signature : un S stylisé.`, next:true },
   { bg:'hall', char:'sylus', speaker:"Narratrice",
     text:()=>`${playerName} lève les yeux. À l'autre bout du couloir, appuyé contre un casier, un jeune homme aux cheveux argentés la regarde avec un sourire paisible. Il était là depuis le début du jeu. Vous ne l'aviez juste… pas remarqué.`,
-    next:true, action:()=>{ secretFound=true; addHeart('silus',999); document.getElementById('stat-silus-wrap').style.display='flex'; } },
+    next:true, action:()=>{ secretFound=true; addHeart('sylus',999); document.getElementById('stat-sylus-wrap').style.display='flex'; } },
   { bg:'hall', char:'sylus', speaker:"???",
-    text:()=>`…Je m'appelle Silus. Ou du moins, c'est ce qu'on m'appelle dans d'autres dimensions. Ici, je suis juste en train de manger un sandwich. Tu en veux ?`,
-    choices:[{ text:"Continuer ▶", action:()=>showEnd('silus'), next:24 }] },
+    text:()=>`…Je m'appelle Sylus. Ou du moins, c'est ce qu'on m'appelle dans d'autres dimensions. Ici, je suis juste en train de manger un sandwich. Tu en veux ?`,
+    choices:[{ text:"Continuer ▶", action:()=>showEnd('sylus'), next:24 }] },
 
-  // Route ignorer papillon — indices 25, 26
+  // Route ignorer papillon — indices 88, 89
   { bg:'hall', char:'none', speaker:"Narratrice",
     text:()=>`${playerName} ignore le papillon. Le papillon repart, l'air déçu. Quelque part dans l'univers, quelqu'un soupire. C'est une fin alternative qui ne sera jamais connue.`, next:true },
   { bg:'hall', char:'none', speaker:"Narratrice",
     text:()=>`La journée se termine. Le soleil se couche sur l'Académie du Destin Romantique™. ${playerName} rentre chez elle avec dans le cœur la douce certitude qu'un choix final l'attend demain.`, next:true },
 
-  // FIN NORMALE — index 27
+  // FIN NORMALE — index 90
   { bg:'hall', char:'none', speaker:"Narratrice",
     text:()=>`Le lendemain matin, ${playerName} sait. Son cœur a choisi. Ou du moins, les statistiques ont choisi pour son cœur, ce qui est probablement plus fiable.`,
     choices:[{ text:"Découvrir ma fin ▶", action:()=>{
       const m=Math.max(hearts.leon,hearts.rhea,hearts.rafayel);
-      if(hearts.leon>=m) showEnd('leon');
-      else if(hearts.rhea>=m) showEnd('rhea');
+      const winners=['leon','rhea','rafayel'].filter(p=>hearts[p]===m);
+      if(winners.length>=2) showEnd('egalite');
+      else if(winners[0]==='leon') showEnd('leon');
+      else if(winners[0]==='rhea') showEnd('rhea');
       else showEnd('rafayel');
     }, next:27 }] },
 ];
@@ -471,9 +720,34 @@ const endings = {
   rafayel: { emoji:"💙",  title:"FIN C — Amour aux Abysses",           char:'rafayel', text:(n)=>`${n} et Rafayel vivent entre deux mondes : la surface le lundi-mercredi-vendredi, les abysses le reste du temps. La clause la plus complexe de leur relation : il n'y a pas de takoyaki sous l'eau. Rafayel travaille sur le problème depuis 3 000 ans.
 
 💙 JOYEUX ANNIVERSAIRE MARGOTTE ! 💙` },
-  silus:   { emoji:"🌀", title:"✨ FIN SECRÈTE — Il Était Là Depuis le Début ✨", char:'sylus', text:(n)=>`FÉLICITATIONS ! Tu as trouvé la fin secrète ! 🎉
+  egalite: { emoji:"💘", title:"FIN D — L'Embarras du Choix", char:'none', text:(n)=>`Le lendemain matin, ${n} se réveille avec une certitude absolue.
+Puis elle regarde ses statistiques. Il y a égalité.
 
-${n} et Silus partagent leur sandwich contre un casier. Il s'avère qu'il était présent dans chaque scène, juste en arrière-plan, attendant patiemment.
+Elle descend au lycée. Léon, Rhea et Rafayel l'attendent tous les trois devant son casier. Simultanément. Personne ne semble trouver ça bizarre.
+
+Léon lui tend du gel capillaire.
+Rhea lui tend un cookie.
+Rafayel lui tend du takoyaki.
+
+${n} les regarde tous les trois. Puis elle prend le gel, le cookie ET le takoyaki.
+
+"J'ai réfléchi." dit-elle. "Et j'ai décidé que le polyamour c'est une option très raisonnable."
+
+Long silence.
+
+Léon : "...Toi t'es pas mal."
+Rhea : "J'aurais pas formulé autrement."
+Rafayel : "J'ai 3000 ans, j'ai vu des choses bien plus étranges."
+
+Quelque part dans le couloir, Sylus mange son sandwich.
+Il était au courant depuis le début.
+
+💘 JOYEUX ANNIVERSAIRE MARGOTTE ! 💘
+La seule fin où tout le monde est content.
+Enfin presque. Le RomanceBot 3000 a planté.` },
+  sylus: { emoji:"🌀", title:"✨ FIN SECRÈTE — Il Était Là Depuis le Début ✨", char:'sylus', text:(n)=>`FÉLICITATIONS ! Tu as trouvé la fin secrète ! 🎉
+
+${n} et Sylus partagent leur sandwich contre un casier. Il s'avère qu'il était présent dans chaque scène, juste en arrière-plan, attendant patiemment.
 C'est soit très romantique, soit légèrement inquiétant. (Probablement les deux.)
 
 🌟 JOYEUX ANNIVERSAIRE MARGOTTE ! 🌟
@@ -594,24 +868,30 @@ function renderScene(){
 function nextScene(){ playClick(); currentScene++; if(currentScene<scenes.length) renderScene(); }
 function goToScene(n){ currentScene=n; renderScene(); }
 
-function addHeart(who,amount){
-  hearts[who]=(hearts[who]||0)+amount;
-  updateStats(); spawnHeart();
+function addHeart(who, amount) {
+  hearts[who] = (hearts[who] || 0) + amount;
+  updateStats();
+  spawnHeart(amount < 0);
+}
+function spawnHeart(broken = false) {
+  const h = document.createElement('div');
+  h.className = 'heart-pop';
+  h.textContent = broken ? '💔' : '💖';
+  h.style.left = (30 + Math.random() * 40) + '%';
+  h.style.bottom = '220px';
+  document.body.appendChild(h);
+  setTimeout(() => h.remove(), 1200);
 }
 function updateStats(){
   document.getElementById('stat-leon').textContent=hearts.leon;
   document.getElementById('stat-rhea').textContent=hearts.rhea;
   document.getElementById('stat-rafayel').textContent=hearts.rafayel;
-  if(hearts.silus>0){
-    document.getElementById('stat-silus').textContent='∞';
-    document.getElementById('stat-silus-wrap').style.display='flex';
+  if(hearts.sylus>0){
+    document.getElementById('stat-sylus').textContent='∞';
+    document.getElementById('stat-sylus-wrap').style.display='flex';
   }
 }
-function spawnHeart(){
-  const h=document.createElement('div'); h.className='heart-pop'; h.textContent='💖';
-  h.style.left=(30+Math.random()*40)+'%'; h.style.bottom='220px';
-  document.body.appendChild(h); setTimeout(()=>h.remove(),1200);
-}
+
 
 function showEnd(who){
   playEnd();
