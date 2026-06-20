@@ -338,6 +338,7 @@ const IMGS = {
   fresh:   "img/personnages/Fresh_Pouet.png",
   julien:  "img/personnages/Julien.png",
   julien_pleure: "img/personnages/Julien_pleure.png",
+  split:   "img/personnages/split.png",
   none:    ""
 };
 
@@ -457,14 +458,14 @@ const scenes = [
   { bg:'cantine', char:'julien', speaker:()=>playerName,
     text:()=>`Mais PTDR T KI toi déjà ? Vas-y jte connais pas jveux pas être ton amie.`, next:true },
   // index 29
-  { bg:'cantine', char:'julien', speaker:"Narratrice",
-    text:()=>`Aïe, coup dur pour Julien.`, next:true },
+  { bg:'cantine', char:'julien', speaker:"Julien chauve",
+    text:()=>`...`, next:true },
   // index 30
-  { bg:'cantine', char:'julien_pleure', speaker:"Julien chauve",
-    text:()=>`*Toujours avec un cheveux sur la langue* Ouinnnnn mais t'es trop méfante en fait !!`, next:true },
+  { bg:'cantine', char:'split', speaker:"Julien démoniaque",
+    text:()=>`*Toujours avec un cheveux sur la langue* Tu m'as démafqué`, next:true },
   // index 31
   { bg:'cantine', char:'none', speaker:"Narratrice",
-    text:()=>`Ah... Julien semble un peu blessé par ton refus. Il se retourne et s'en va, les épaules baissées. Tu ne le reverras plus jamais.`, 
+    text:()=>`Julien disparaît soudainement dans un nuage de fumée.`, 
   choices:[{ text:"Continuer ▶", next:53 }] },
 
   // ROUTE "SI TU VEUX...?" - indices 32
@@ -603,7 +604,7 @@ const scenes = [
 
   // SCÈNE COMMUNE - RHEA, "COOKIE CHEFFE" — index 67
   { bg:'salle_de_classe', char:'none', speaker:"Narratrice",
-    text:()=>`Deuxième cours de l'après-midi : cuisine créative. Au tableau, la recette du jour : Gâteau au cacao bio, façon terroir. Enfin… c'est ce que Margotte a cru lire. En s'approchant, elle réalise que le "cacao" est orthographié différemment...`, next:true },
+    text:()=>`Deuxième cours de l'après-midi : cuisine créative. Au tableau, la recette du jour : Gâteau au cacao bio, façon terroir. Enfin… c'est ce que ${playerName} a cru lire. En s'approchant, elle réalise que le "cacao" est orthographié différemment...`, next:true },
   // index 68
   { bg:'salle_de_classe', char:'caca', speaker:"Narratrice",
     text:()=>`Les ingrédients sont livrés dans des sacs étiquetés "Karfourre — Caca Bio Premium ✓ Agriculture Raisonnée"...`, next:true },
@@ -612,13 +613,13 @@ const scenes = [
     text:()=>`Les équipes sont aléatoires. Recours interdits. Le résultat sera noté sur la texture, l'odeur, et la présentation. Bonne chance.`, next:true },
   // index 70
   { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
-    text:()=>`Par pur hasard cosmique — ou par intervention d'une puissance supérieure douteuse — Margotte se retrouve en binôme avec Rhea Ripley.`, next:true },
+    text:()=>`Par pur hasard cosmique — ou par intervention d'une puissance supérieure douteuse — ${playerName} se retrouve en binôme avec Rhea Ripley.`, next:true },
   // index 71
   { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
     text:()=>`*renifle le sac* … C'est bio au moins. *retrousse ses manches* Bon. Moi je pétris, toi tu doses. On va faire une équipe de ouf, ma belle.`, next:true },
   // index 72
   { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Narratrice",
-    text:()=>`Rhea malaxe la préparation avec la même intensité qu'un entraînement de catch. Le gâteau prend forme. Il est techniquement parfait. Personne n'ose imaginer le goût. Rhea se tourne vers Margotte, les mains encore plongées dans la pâte.`, next:true },
+    text:()=>`Rhea malaxe la préparation avec la même intensité qu'un entraînement de catch. Le gâteau prend forme. Il est techniquement parfait. Personne n'ose imaginer le goût. Rhea se tourne vers ${playerName}, les mains encore plongées dans la pâte.`, next:true },
   // index 73
   { bg:'salle_de_classe', char:'rhea_cheffe', speaker:"Rhea Ripley",
     text:()=>`Hé. T'as une technique pour la déco ou tu fais juste… *geste vague* …ça ?`, next:true },
